@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Flatpickr (pour le calendrier) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         /* Styles personnalisés */
         body {
@@ -536,6 +538,7 @@
         
         .date-input-group .form-control {
             padding-right: 40px;
+            cursor: pointer;
         }
         
         .calendar-toggle {
@@ -906,6 +909,51 @@
             margin-bottom: 0;
             font-style: italic;
         }
+        
+        /* Responsive pour les boutons du header */
+        @media (max-width: 768px) {
+            .header-buttons {
+                margin-left: auto;
+            }
+            
+            .navbar .container {
+                flex-wrap: nowrap;
+            }
+            
+            .navbar-brand {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 150px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-brand {
+                max-width: 120px;
+                font-size: 1rem;
+            }
+            
+            .header-buttons .btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .header-buttons .btn i {
+                margin-right: 3px;
+            }
+        }
+        
+        /* Style pour le champ date de naissance avec SweetAlert2 */
+        .date-input-swal {
+            cursor: pointer;
+            background-color: white;
+        }
+        
+        .swal2-popup .swal2-calendar {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
     </style>
 </head>
 <body>
@@ -952,7 +1000,7 @@
             <span class="navbar-brand mb-0 h1">
                 <i class="fas fa-user-tie me-2"></i>Le CV
             </span>
-            <div class="d-flex">
+            <div class="header-buttons d-flex">
                 <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#shareModal">
                     <i class="fas fa-share-alt me-1"></i> Partager
                 </button>
@@ -1016,7 +1064,7 @@
                         • Contacter directement les candidats</p>
                         
                         <p>🔗 <strong>Lien du site :</strong><br>
-                        https://mon-site-le-cv.com</p>
+                        https://lecv.vercel.app</p>
                         
                         <p>Merci de partager avec vos contacts ! 🚀</p>
                     </div>
@@ -1116,7 +1164,7 @@
                             <div class="input-highlight">
                                 <div class="date-input-group">
                                     <div class="floating-label">
-                                        <input type="text" class="form-control" id="dateNaissance" placeholder=" " required>
+                                        <input type="text" class="form-control date-input-swal" id="dateNaissance" placeholder=" " required readonly>
                                         <label for="dateNaissance"><i class="fas fa-birthday-cake"></i> Date de naissance</label>
                                         <button type="button" class="calendar-toggle" id="calendarToggle">
                                             <i class="fas fa-calendar-alt"></i>
@@ -1210,6 +1258,8 @@
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
         $(document).ready(function() {
@@ -1292,25 +1342,19 @@
                 }, 500);
             };
             
-            // Configuration du calendrier Flatpickr
-            const datePicker = flatpickr("#dateNaissance", {
-                locale: "fr",
-                dateFormat: "d/m/Y",
-                maxDate: "today",
-                onChange: function(selectedDates, dateStr, instance) {
-                    calculateAge(selectedDates[0]);
-                }
-            });
-            
-            // Ouvrir le calendrier en cliquant sur l'icône
-            $("#calendarToggle").click(function() {
-                datePicker.open();
-            });
-            
             // Fonction pour calculer l'âge
-            function calculateAge(birthDate) {
-                if (!birthDate) return;
+            function calculateAge(birthDateStr) {
+                if (!birthDateStr) return;
                 
+                // Convertir la date du format dd/mm/yyyy en objet Date
+                const parts = birthDateStr.split('/');
+                if (parts.length !== 3) return;
+                
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1;
+                const year = parseInt(parts[2], 10);
+                
+                const birthDate = new Date(year, month, day);
                 const today = new Date();
                 let age = today.getFullYear() - birthDate.getFullYear();
                 const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -1320,7 +1364,134 @@
                 }
                 
                 $("#ageDisplay").text(`Âge: ${age} ans`);
+                return age;
             }
+            
+            // Fonction pour ouvrir le calendrier SweetAlert2
+            function openSwalCalendar() {
+                Swal.fire({
+                    title: 'Sélectionner la date de naissance',
+                    html: `
+                        <div class="swal2-calendar-container">
+                            <input type="date" id="swalDateInput" class="form-control" max="${new Date().toISOString().split('T')[0]}" style="margin-bottom: 15px;">
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" id="swalDay" class="form-control" placeholder="Jour" min="1" max="31" style="text-align: center;">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" id="swalYear" class="form-control" placeholder="Année" min="1900" max="${new Date().getFullYear()}" style="text-align: center;">
+                                </div>
+                            </div>
+                            <select id="swalMonth" class="form-select mt-2">
+                                <option value="">Mois</option>
+                                <option value="1">Janvier</option>
+                                <option value="2">Février</option>
+                                <option value="3">Mars</option>
+                                <option value="4">Avril</option>
+                                <option value="5">Mai</option>
+                                <option value="6">Juin</option>
+                                <option value="7">Juillet</option>
+                                <option value="8">Août</option>
+                                <option value="9">Septembre</option>
+                                <option value="10">Octobre</option>
+                                <option value="11">Novembre</option>
+                                <option value="12">Décembre</option>
+                            </select>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Valider',
+                    cancelButtonText: 'Annuler',
+                    didOpen: () => {
+                        // Focus sur le champ date
+                        document.getElementById('swalDateInput').focus();
+                        
+                        // Si une date existe déjà, la pré-remplir
+                        const currentDate = $('#dateNaissance').val();
+                        if (currentDate) {
+                            const parts = currentDate.split('/');
+                            if (parts.length === 3) {
+                                document.getElementById('swalDay').value = parts[0];
+                                document.getElementById('swalMonth').value = parts[1];
+                                document.getElementById('swalYear').value = parts[2];
+                                
+                                // Formater pour l'input date
+                                const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                                document.getElementById('swalDateInput').value = dateObj.toISOString().split('T')[0];
+                            }
+                        }
+                        
+                        // Mettre à jour les champs manuels quand l'input date change
+                        document.getElementById('swalDateInput').addEventListener('change', function(e) {
+                            const date = new Date(e.target.value);
+                            if (!isNaN(date.getTime())) {
+                                document.getElementById('swalDay').value = date.getDate();
+                                document.getElementById('swalMonth').value = date.getMonth() + 1;
+                                document.getElementById('swalYear').value = date.getFullYear();
+                            }
+                        });
+                        
+                        // Mettre à jour l'input date quand les champs manuels changent
+                        function updateDateInput() {
+                            const day = document.getElementById('swalDay').value;
+                            const month = document.getElementById('swalMonth').value;
+                            const year = document.getElementById('swalYear').value;
+                            
+                            if (day && month && year) {
+                                const date = new Date(year, month - 1, day);
+                                if (!isNaN(date.getTime())) {
+                                    document.getElementById('swalDateInput').value = date.toISOString().split('T')[0];
+                                }
+                            }
+                        }
+                        
+                        document.getElementById('swalDay').addEventListener('input', updateDateInput);
+                        document.getElementById('swalMonth').addEventListener('change', updateDateInput);
+                        document.getElementById('swalYear').addEventListener('input', updateDateInput);
+                    },
+                    preConfirm: () => {
+                        const day = document.getElementById('swalDay').value;
+                        const month = document.getElementById('swalMonth').value;
+                        const year = document.getElementById('swalYear').value;
+                        
+                        if (!day || !month || !year) {
+                            Swal.showValidationMessage('Veuillez remplir tous les champs');
+                            return false;
+                        }
+                        
+                        // Validation de la date
+                        const date = new Date(year, month - 1, day);
+                        if (isNaN(date.getTime())) {
+                            Swal.showValidationMessage('Date invalide');
+                            return false;
+                        }
+                        
+                        // Vérifier que la date n'est pas dans le futur
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        if (date > today) {
+                            Swal.showValidationMessage('La date de naissance ne peut pas être dans le futur');
+                            return false;
+                        }
+                        
+                        // Formater la date au format dd/mm/yyyy
+                        const formattedDay = day.padStart(2, '0');
+                        const formattedMonth = month.padStart(2, '0');
+                        
+                        return `${formattedDay}/${formattedMonth}/${year}`;
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        $('#dateNaissance').val(result.value);
+                        calculateAge(result.value);
+                    }
+                });
+            }
+            
+            // Ouvrir le calendrier SweetAlert2 en cliquant sur le champ date
+            $('#dateNaissance, #calendarToggle').click(function() {
+                openSwalCalendar();
+            });
             
             // Afficher le message important après 3 secondes
             setTimeout(function() {
@@ -1416,15 +1587,7 @@
                 
                 shuffledCVs.forEach((cv, index) => {
                     // Calculer l'âge à partir de la date de naissance
-                    const naissanceDate = cv.dateNaissance.split('/');
-                    const birthDate = new Date(naissanceDate[2], naissanceDate[1] - 1, naissanceDate[0]);
-                    const today = new Date();
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-                    
-                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
+                    const age = calculateAge(cv.dateNaissance) || 'N/A';
                     
                     const card = `
                         <div class="col-md-6 col-lg-4 card-spacing">
@@ -1491,15 +1654,7 @@
                 }
                 
                 // Calculer l'âge
-                const naissanceDate = cv.dateNaissance.split('/');
-                const birthDate = new Date(naissanceDate[2], naissanceDate[1] - 1, naissanceDate[0]);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
+                const age = calculateAge(cv.dateNaissance) || 'N/A';
                 
                 // Formater les compétences en badges
                 const competencesArray = cv.competences.split(',').map(item => item.trim());
@@ -1666,6 +1821,9 @@
             
             // ========== FONCTIONNALITÉS DE PARTAGE ==========
             
+            // Lien du site
+            const siteUrl = 'https://lecv.vercel.app';
+            
             // Message de partage
             const shareMessage = `🎉 *NOUVELLE PLATEFORME DE RECRUTEMENT* 🎉
 
@@ -1680,7 +1838,7 @@ Je suis heureux de vous présenter *"Le CV"*, ma nouvelle plateforme de mise en 
 • Contacter directement les candidats
 
 🚀 *Lien du site :*
-https://mon-site-le-cv.com
+${siteUrl}
 
 👉 Partagez avec vos contacts qui cherchent du travail ou qui recrutent !
 
@@ -1696,7 +1854,7 @@ Merci pour votre soutien ! 🙏`;
             
             // Partager sur Facebook
             $('#shareFacebook').click(function() {
-                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://mon-site-le-cv.com')}&quote=${encodeURIComponent('Découvrez "Le CV" - Nouvelle plateforme de recrutement !')}`;
+                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent('Découvrez "Le CV" - Nouvelle plateforme de recrutement !')}`;
                 window.open(facebookUrl, '_blank', 'width=600,height=400');
                 $('#shareModal').modal('hide');
                 showAlert('Partage sur Facebook ouvert!', 'success', 3000);
@@ -1704,8 +1862,7 @@ Merci pour votre soutien ! 🙏`;
             
             // Copier le lien
             $('#copyLink').click(function() {
-                const link = 'https://mon-site-le-cv.com';
-                navigator.clipboard.writeText(link).then(function() {
+                navigator.clipboard.writeText(siteUrl).then(function() {
                     showAlert('Lien copié dans le presse-papier!', 'success', 3000);
                     $('#shareModal').modal('hide');
                 }).catch(function(err) {
