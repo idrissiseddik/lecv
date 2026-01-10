@@ -8,8 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Flatpickr (pour le calendrier) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
@@ -553,43 +551,6 @@
             z-index: 5;
         }
         
-        /* Personnalisation du calendrier Flatpickr */
-        .flatpickr-calendar {
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-            border: none;
-        }
-        
-        .flatpickr-day.selected {
-            background: #0d6efd;
-            border-color: #0d6efd;
-        }
-        
-        .flatpickr-day.today {
-            border-color: #0d6efd;
-        }
-        
-        .flatpickr-day.today:hover {
-            background: #0d6efd;
-            color: white;
-        }
-        
-        .flatpickr-months .flatpickr-month {
-            color: #0d6efd;
-        }
-        
-        .flatpickr-months .flatpickr-next-month:hover, 
-        .flatpickr-months .flatpickr-prev-month:hover {
-            color: #0a58ca;
-        }
-        
-        .age-display {
-            font-size: 0.85rem;
-            color: #6c757d;
-            margin-top: 5px;
-            font-style: italic;
-        }
-        
         /* Messages d'alerte */
         .alert-container {
             position: fixed;
@@ -950,9 +911,83 @@
             background-color: white;
         }
         
-        .swal2-popup .swal2-calendar {
-            width: 100% !important;
-            max-width: 100% !important;
+        /* Styles pour le formulaire de date amélioré */
+        .birthday-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .birthday-form .form-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .birthday-form .form-control {
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .birthday-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .birthday-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+        }
+        
+        /* Animation pour l'affichage de l'âge */
+        .age-result {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Style pour le sélecteur d'année amélioré */
+        .year-select-container {
+            position: relative;
+        }
+        
+        .year-select-container .form-control {
+            cursor: pointer;
+        }
+        
+        /* Style pour les champs de date individuelle */
+        .date-field {
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .date-field::placeholder {
+            color: #adb5bd;
+            font-weight: normal;
         }
     </style>
 </head>
@@ -1255,9 +1290,6 @@
     <!-- Bootstrap & jQuery JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -1344,11 +1376,11 @@
             
             // Fonction pour calculer l'âge
             function calculateAge(birthDateStr) {
-                if (!birthDateStr) return;
+                if (!birthDateStr) return null;
                 
                 // Convertir la date du format dd/mm/yyyy en objet Date
                 const parts = birthDateStr.split('/');
-                if (parts.length !== 3) return;
+                if (parts.length !== 3) return null;
                 
                 const day = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
@@ -1363,114 +1395,184 @@
                     age--;
                 }
                 
-                $("#ageDisplay").text(`Âge: ${age} ans`);
                 return age;
             }
             
-            // Fonction pour ouvrir le calendrier SweetAlert2
-            function openSwalCalendar() {
+            // Fonction pour ouvrir le formulaire de date de naissance amélioré
+            function openBirthdayForm() {
+                // Récupérer l'année actuelle
+                const currentYear = new Date().getFullYear();
+                
+                // Générer les options d'années (de l'année actuelle à 1900)
+                let yearOptions = '';
+                for (let year = currentYear; year >= 1900; year--) {
+                    yearOptions += `<option value="${year}">${year}</option>`;
+                }
+                
+                // Générer les options de jours
+                let dayOptions = '<option value="">Jour</option>';
+                for (let day = 1; day <= 31; day++) {
+                    dayOptions += `<option value="${day}">${day}</option>`;
+                }
+                
                 Swal.fire({
-                    title: 'Sélectionner la date de naissance',
+                    title: 'Date de naissance',
                     html: `
-                        <div class="swal2-calendar-container">
-                            <input type="date" id="swalDateInput" class="form-control" max="${new Date().toISOString().split('T')[0]}" style="margin-bottom: 15px;">
-                            <div class="row">
-                                <div class="col-6">
-                                    <input type="number" id="swalDay" class="form-control" placeholder="Jour" min="1" max="31" style="text-align: center;">
-                                </div>
-                                <div class="col-6">
-                                    <input type="number" id="swalYear" class="form-control" placeholder="Année" min="1900" max="${new Date().getFullYear()}" style="text-align: center;">
+                        <div class="birthday-form">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label">Jour</label>
+                                    <select class="form-control date-field" id="swalBirthDay">
+                                        ${dayOptions}
+                                    </select>
                                 </div>
                             </div>
-                            <select id="swalMonth" class="form-select mt-2">
-                                <option value="">Mois</option>
-                                <option value="1">Janvier</option>
-                                <option value="2">Février</option>
-                                <option value="3">Mars</option>
-                                <option value="4">Avril</option>
-                                <option value="5">Mai</option>
-                                <option value="6">Juin</option>
-                                <option value="7">Juillet</option>
-                                <option value="8">Août</option>
-                                <option value="9">Septembre</option>
-                                <option value="10">Octobre</option>
-                                <option value="11">Novembre</option>
-                                <option value="12">Décembre</option>
-                            </select>
+                            
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label">Mois</label>
+                                    <select class="form-control date-field" id="swalBirthMonth">
+                                        <option value="">Mois</option>
+                                        <option value="1">Janvier</option>
+                                        <option value="2">Février</option>
+                                        <option value="3">Mars</option>
+                                        <option value="4">Avril</option>
+                                        <option value="5">Mai</option>
+                                        <option value="6">Juin</option>
+                                        <option value="7">Juillet</option>
+                                        <option value="8">Août</option>
+                                        <option value="9">Septembre</option>
+                                        <option value="10">Octobre</option>
+                                        <option value="11">Novembre</option>
+                                        <option value="12">Décembre</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label">Année</label>
+                                    <div class="year-select-container">
+                                        <select class="form-control date-field" id="swalBirthYear">
+                                            <option value="">Année</option>
+                                            ${yearOptions}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="birthdayResult" style="display: none;"></div>
                         </div>
                     `,
                     showCancelButton: true,
                     confirmButtonText: 'Valider',
                     cancelButtonText: 'Annuler',
+                    width: 500,
                     didOpen: () => {
-                        // Focus sur le champ date
-                        document.getElementById('swalDateInput').focus();
-                        
                         // Si une date existe déjà, la pré-remplir
                         const currentDate = $('#dateNaissance').val();
                         if (currentDate) {
                             const parts = currentDate.split('/');
                             if (parts.length === 3) {
-                                document.getElementById('swalDay').value = parts[0];
-                                document.getElementById('swalMonth').value = parts[1];
-                                document.getElementById('swalYear').value = parts[2];
-                                
-                                // Formater pour l'input date
-                                const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
-                                document.getElementById('swalDateInput').value = dateObj.toISOString().split('T')[0];
+                                $('#swalBirthDay').val(parts[0]);
+                                $('#swalBirthMonth').val(parts[1]);
+                                $('#swalBirthYear').val(parts[2]);
+                                updateBirthdayResult();
                             }
                         }
                         
-                        // Mettre à jour les champs manuels quand l'input date change
-                        document.getElementById('swalDateInput').addEventListener('change', function(e) {
-                            const date = new Date(e.target.value);
-                            if (!isNaN(date.getTime())) {
-                                document.getElementById('swalDay').value = date.getDate();
-                                document.getElementById('swalMonth').value = date.getMonth() + 1;
-                                document.getElementById('swalYear').value = date.getFullYear();
-                            }
+                        // Mettre à jour le résultat quand les champs changent
+                        $('#swalBirthDay, #swalBirthMonth, #swalBirthYear').change(function() {
+                            updateBirthdayResult();
                         });
                         
-                        // Mettre à jour l'input date quand les champs manuels changent
-                        function updateDateInput() {
-                            const day = document.getElementById('swalDay').value;
-                            const month = document.getElementById('swalMonth').value;
-                            const year = document.getElementById('swalYear').value;
+                        // Fonction pour mettre à jour l'affichage du résultat
+                        function updateBirthdayResult() {
+                            const day = $('#swalBirthDay').val();
+                            const month = $('#swalBirthMonth').val();
+                            const year = $('#swalBirthYear').val();
                             
                             if (day && month && year) {
+                                // Vérifier si la date est valide
                                 const date = new Date(year, month - 1, day);
-                                if (!isNaN(date.getTime())) {
-                                    document.getElementById('swalDateInput').value = date.toISOString().split('T')[0];
+                                const today = new Date();
+                                
+                                if (isNaN(date.getTime())) {
+                                    $('#birthdayResult').html(`
+                                        <div class="alert alert-danger">
+                                            Date invalide
+                                        </div>
+                                    `).show();
+                                    return;
                                 }
+                                
+                                if (date > today) {
+                                    $('#birthdayResult').html(`
+                                        <div class="alert alert-danger">
+                                            La date ne peut pas être dans le futur
+                                        </div>
+                                    `).show();
+                                    return;
+                                }
+                                
+                                // Formater la date
+                                const formattedDay = day.padStart(2, '0');
+                                const formattedMonth = month.padStart(2, '0');
+                                const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+                                
+                                // Calculer l'âge
+                                const age = calculateAge(formattedDate);
+                                
+                                if (age !== null) {
+                                    // Obtenir le nom du mois
+                                    const monthNames = [
+                                        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                                        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+                                    ];
+                                    const monthName = monthNames[month - 1];
+                                    
+                                    $('#birthdayResult').html(`
+                                        <div class="age-result">
+                                            <div>${day} ${monthName} ${year}</div>
+                                            <div style="font-size: 1rem; margin-top: 5px;">
+                                                Âge: ${age} ans
+                                            </div>
+                                        </div>
+                                    `).show();
+                                }
+                            } else {
+                                $('#birthdayResult').hide();
                             }
                         }
-                        
-                        document.getElementById('swalDay').addEventListener('input', updateDateInput);
-                        document.getElementById('swalMonth').addEventListener('change', updateDateInput);
-                        document.getElementById('swalYear').addEventListener('input', updateDateInput);
                     },
                     preConfirm: () => {
-                        const day = document.getElementById('swalDay').value;
-                        const month = document.getElementById('swalMonth').value;
-                        const year = document.getElementById('swalYear').value;
+                        const day = $('#swalBirthDay').val();
+                        const month = $('#swalBirthMonth').val();
+                        const year = $('#swalBirthYear').val();
                         
                         if (!day || !month || !year) {
-                            Swal.showValidationMessage('Veuillez remplir tous les champs');
+                            Swal.showValidationMessage('Veuillez sélectionner le jour, le mois et l\'année');
                             return false;
                         }
                         
                         // Validation de la date
                         const date = new Date(year, month - 1, day);
+                        const today = new Date();
+                        
                         if (isNaN(date.getTime())) {
                             Swal.showValidationMessage('Date invalide');
                             return false;
                         }
                         
                         // Vérifier que la date n'est pas dans le futur
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
                         if (date > today) {
                             Swal.showValidationMessage('La date de naissance ne peut pas être dans le futur');
+                            return false;
+                        }
+                        
+                        // Vérifier les années extrêmes
+                        if (year < 1900 || year > currentYear) {
+                            Swal.showValidationMessage('Année invalide');
                             return false;
                         }
                         
@@ -1483,14 +1585,17 @@
                 }).then((result) => {
                     if (result.isConfirmed && result.value) {
                         $('#dateNaissance').val(result.value);
-                        calculateAge(result.value);
+                        const age = calculateAge(result.value);
+                        if (age !== null) {
+                            $('#ageDisplay').text(`Âge: ${age} ans`);
+                        }
                     }
                 });
             }
             
-            // Ouvrir le calendrier SweetAlert2 en cliquant sur le champ date
+            // Ouvrir le formulaire de date amélioré en cliquant sur le champ date
             $('#dateNaissance, #calendarToggle').click(function() {
-                openSwalCalendar();
+                openBirthdayForm();
             });
             
             // Afficher le message important après 3 secondes
