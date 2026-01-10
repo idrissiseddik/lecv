@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le CV</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr (pour le calendrier) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Styles personnalisés */
+        body {
+            padding-top: 56px;
+            padding-bottom: 60px;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .fixed-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .cv-card {
+            transition: transform 0.3s;
+            margin-bottom: 25px;
+            border: 2px solid #0d6efd !important;
+            border-radius: 10px !important;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .cv-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .filter-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .main-content {
+            margin-top: 20px;
+            min-height: calc(100vh - 180px);
+        }
+        
+        .whatsapp-btn {
+            background-color: #25D366;
+            border-color: #25D366;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: #128C7E;
+            border-color: #128C7E;
+        }
+        
+        .facebook-btn {
+            background-color: #1877F2;
+            border-color: #1877F2;
+            color: white;
+        }
+        
+        .facebook-btn:hover {
+            background-color: #166FE5;
+            border-color: #166FE5;
+            color: white;
+        }
+        
+        .share-btn {
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+            color: white;
+        }
+        
+        .share-btn:hover {
+            background-color: #5e33b1;
+            border-color: #5e33b1;
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .call-btn {
+            background-color: #0d6efd;
+            color: white;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+            color: white;
+        }
+        
+        .btn-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 8px 12px;
+        }
+        
+        .candidate-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 3px solid #0d6efd;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: block;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        .card-spacing {
+            margin-bottom: 25px;
+        }
+        
+        .competence-badge {
+            display: inline-block;
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 0.35em 0.65em;
+            border-radius: 0.25rem;
+            margin: 0.2rem;
+            font-size: 0.875em;
+            font-weight: 500;
+        }
+        
+        .formation-item {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid #0d6efd;
+        }
+        
+        /* Styles pour la modale */
+        .modal-content {
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+            padding: 15px 20px;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-label i {
+            margin-right: 8px;
+            color: #0d6efd;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 2px solid #e1e5eb;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #0d6efd, #0a58ca);
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+        
+        .input-group:focus-within:after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #e1e5eb;
+            position: relative;
+        }
+        
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-section-title i {
+            margin-right: 10px;
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #e1e5eb;
+            padding: 15px 25px;
+        }
+        
+        .btn-modal {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-close {
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+        }
+        
+        .form-control::placeholder {
+            color: #6c757d;
+            opacity: 0.6;
+        }
+        
+        .input-highlight {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .input-highlight:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #0d6efd, #0a58ca);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .input-highlight:focus-within:before {
+            transform: scaleX(1);
+        }
+        
+        /* Correction pour les labels flottants */
+        .floating-label {
+            position: relative;
+        }
+        
+        .floating-label .form-control {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+            padding: 1.5rem 0.75rem 0.5rem;
+        }
+        
+        .floating-label label {
+            position: absolute;
+            top: 0.6rem;
+            left: 0.75rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            background-color: white;
+            padding: 0 0.3rem;
+            margin: 0;
+            opacity: 0.7;
+        }
+        
+        .floating-label .form-control:focus ~ label,
+        .floating-label .form-control:not(:placeholder-shown) ~ label {
+            top: -0.5rem;
+            left: 0.6rem;
+            font-size: 0.8rem;
+            color: #0d6efd;
+            font-weight: 500;
+            opacity: 1;
+        }
+        
+        /* Ajustement pour les textareas */
+        .floating-label textarea.form-control {
+            padding-top: 1.7rem;
+        }
+        
+        .floating-label textarea.form-control ~ label {
+            top: 0.8rem;
+        }
+        
+        .floating-label textarea.form-control:focus ~ label,
+        .floating-label textarea.form-control:not(:placeholder-shown) ~ label {
+            top: -0.6rem;
+        }
+        
+        /* Pour les selects */
+        .floating-label select.form-control {
+            padding-top: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
+        
+        .floating-label select.form-control ~ label {
+            top: 0.8rem;
+        }
+        
+        .floating-label select.form-control:focus ~ label,
+        .floating-label select.form-control:not([value=""]):valid ~ label {
+            top: -0.5rem;
+            left: 0.6rem;
+            font-size: 0.8rem;
+            color: #0d6efd;
+            font-weight: 500;
+            opacity: 1;
+        }
+        
+        .info-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f1f1f1;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-title i {
+            margin-right: 5px;
+        }
+        
+        /* Message de filtre */
+        .filter-message {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+        }
+        
+        .filter-message i {
+            font-size: 1.2rem;
+        }
+        
+        @keyframes slideIn {
+            from {
+                top: -100px;
+                opacity: 0;
+            }
+            to {
+                top: 100px;
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        .filter-count {
+            font-weight: bold;
+            background-color: white;
+            color: #0d6efd;
+            padding: 3px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        
+        .date-ajout {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .photo-info {
+            background-color: #e9f7fe;
+            border-left: 4px solid #0d6efd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .photo-info i {
+            color: #0d6efd;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Message d'information important */
+        .important-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+            animation: popIn 0.5s ease;
+            display: none;
+        }
+        
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .important-message-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .important-message-body {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .important-message-footer {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            display: none;
+        }
+        
+        .btn-important {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-important:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        }
+        
+        /* Styles pour le champ date de naissance */
+        .date-input-group {
+            position: relative;
+        }
+        
+        .date-input-group .form-control {
+            padding-right: 40px;
+        }
+        
+        .calendar-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 5;
+        }
+        
+        /* Personnalisation du calendrier Flatpickr */
+        .flatpickr-calendar {
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border: none;
+        }
+        
+        .flatpickr-day.selected {
+            background: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .flatpickr-day.today {
+            border-color: #0d6efd;
+        }
+        
+        .flatpickr-day.today:hover {
+            background: #0d6efd;
+            color: white;
+        }
+        
+        .flatpickr-months .flatpickr-month {
+            color: #0d6efd;
+        }
+        
+        .flatpickr-months .flatpickr-next-month:hover, 
+        .flatpickr-months .flatpickr-prev-month:hover {
+            color: #0a58ca;
+        }
+        
+        .age-display {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        /* Messages d'alerte */
+        .alert-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            pointer-events: none;
+        }
+        
+        .alert-message {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: alertSlideIn 0.5s ease forwards, alertShake 0.5s ease 0.5s;
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: auto;
+        }
+        
+        .alert-message.success {
+            background: linear-gradient(135deg, #198754 0%, #0f5132 100%);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+            animation: alertSlideIn 0.5s ease forwards, alertPulse 0.5s ease 0.5s;
+        }
+        
+        .alert-message.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: #212529;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+            animation: alertSlideIn 0.5s ease forwards, alertShake 0.5s ease 0.5s;
+        }
+        
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        
+        .alert-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .alert-close:hover {
+            opacity: 1;
+        }
+        
+        .alert-message.warning .alert-close {
+            color: #212529;
+        }
+        
+        @keyframes alertSlideIn {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes alertShake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+        
+        @keyframes alertPulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .alert-hide {
+            animation: alertSlideOut 0.5s ease forwards;
+        }
+        
+        @keyframes alertSlideOut {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Style pour le message de filtre amélioré */
+        .filter-alert {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: alertSlideIn 0.5s ease forwards, alertPulse 0.5s ease 0.5s;
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: auto;
+        }
+        
+        .filter-alert .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+        
+        .filter-alert .alert-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .filter-alert .alert-close:hover {
+            opacity: 1;
+        }
+        
+        /* Styles pour la modale de profil */
+        .profile-modal-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid #0d6efd;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        
+        .profile-contact-info {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .profile-section {
+            margin-bottom: 20px;
+        }
+        
+        .profile-section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        /* Styles pour la carte principale simplifiée */
+        .cv-card-main {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cv-card-main .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cv-card-main .card-footer {
+            margin-top: auto;
+        }
+        
+        .candidate-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .candidate-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .candidate-position {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .candidate-location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        
+        .view-profile-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        /* Styles pour les boutons de la modale de profil */
+        .profile-modal-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px 25px;
+            border-top: 1px solid #e1e5eb;
+        }
+        
+        .contact-buttons-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .contact-buttons-row .btn {
+            flex: 1;
+        }
+        
+        .close-button-row .btn {
+            width: 100%;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .close-button-row .btn:hover {
+            background-color: #bb2d3b;
+            border-color: #b02a37;
+        }
+        
+        /* Styles pour le bouton de partage dans le header */
+        .share-header-btn {
+            margin-left: 10px;
+        }
+        
+        /* Modal pour le partage */
+        .share-modal .modal-body {
+            text-align: center;
+        }
+        
+        .share-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .share-buttons .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .share-message {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0d6efd;
+        }
+        
+        .share-message p {
+            margin-bottom: 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Container pour les messages d'alerte -->
+    <div class="alert-container" id="alertContainer"></div>
+    
+    <!-- Overlay pour le message important -->
+    <div class="overlay" id="messageOverlay"></div>
+    
+    <!-- Message important -->
+    <div class="important-message" id="importantMessage">
+        <div class="important-message-header">
+            <i class="fas fa-bridge fa-2x mb-3"></i>
+            <h4 class="mb-0">Plateforme de Mise en Relation</h4>
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" id="closeImportantMessage"></button>
+        </div>
+        <div class="important-message-body">
+            <p class="lead">Bienvenue sur <strong>Le CV</strong> !</p>
+            <p>Notre plateforme sert d'intermédiaire entre les <span class="text-primary">employeurs</span> à la recherche de talents et les <span class="text-success">chercheurs d'emploi</span> désireux de trouver leur prochaine opportunité professionnelle.</p>
+            <div class="d-flex justify-content-around my-4">
+                <div class="text-center">
+                    <i class="fas fa-building fa-2x text-primary mb-2"></i>
+                    <p class="mb-0 small">Employeurs</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-handshake fa-2x text-warning mb-2"></i>
+                    <p class="mb-0 small">Mise en relation</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-user-graduate fa-2x text-success mb-2"></i>
+                    <p class="mb-0 small">Candidats</p>
+                </div>
+            </div>
+            <p class="mb-0">Trouvez la perle rare ou votre emploi idéal en quelques clics seulement !</p>
+        </div>
+        <div class="important-message-footer">
+            <button class="btn btn-important" id="closeMessage">OK, j'ai compris</button>
+        </div>
+    </div>
+
+    <!-- Header fixe -->
+    <header class="fixed-header navbar navbar-dark bg-primary">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-user-tie me-2"></i>Le CV
+            </span>
+            <div class="d-flex">
+                <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#shareModal">
+                    <i class="fas fa-share-alt me-1"></i> Partager
+                </button>
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#cvModal">
+                    <i class="fas fa-plus me-1"></i> Déposer un CV
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <div class="container main-content">
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="filter-section">
+                    <h5><i class="fas fa-filter me-2"></i>Filtrer par ville</h5>
+                    <select id="villeFilter" class="form-select">
+                        <option value="">Toutes les villes</option>
+                        <option value="Casablanca">Casablanca</option>
+                        <option value="Rabat">Rabat</option>
+                        <option value="Marrakech">Marrakech</option>
+                        <option value="Fès">Fès</option>
+                        <option value="Tanger">Tanger</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="cvContainer">
+            <!-- Les CV seront chargés ici dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Footer fixe -->
+    <footer class="fixed-footer bg-light py-3 text-center">
+        <div class="container">
+            <span class="text-muted">© 2025 Le CV - Created by : M.Seddik Elidrissi</span>
+        </div>
+    </footer>
+
+    <!-- Modal pour partager le site -->
+    <div class="modal fade share-modal" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel"><i class="fas fa-share-alt me-2"></i>Partager le site</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="lead">🎉 <strong>Je suis fier de vous annoncer le lancement de mon nouveau site !</strong></p>
+                    
+                    <div class="share-message">
+                        <p>👋 Bonjour à tous !<br>
+                        Je suis heureux de vous présenter <strong>Le CV</strong>, ma nouvelle plateforme de mise en relation entre employeurs et chercheurs d'emploi.</p>
+                        
+                        <p>📌 <strong>Ce que vous pouvez faire :</strong><br>
+                        • Déposer votre CV gratuitement<br>
+                        • Trouver des talents pour votre entreprise<br>
+                        • Filtrer les CV par ville<br>
+                        • Contacter directement les candidats</p>
+                        
+                        <p>🔗 <strong>Lien du site :</strong><br>
+                        https://mon-site-le-cv.com</p>
+                        
+                        <p>Merci de partager avec vos contacts ! 🚀</p>
+                    </div>
+                    
+                    <div class="share-buttons">
+                        <button class="btn whatsapp-btn" id="shareWhatsApp">
+                            <i class="fab fa-whatsapp"></i> Partager sur WhatsApp
+                        </button>
+                        <button class="btn facebook-btn" id="shareFacebook">
+                            <i class="fab fa-facebook"></i> Partager sur Facebook
+                        </button>
+                        <button class="btn btn-secondary" id="copyLink">
+                            <i class="fas fa-copy"></i> Copier le lien
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter un CV -->
+    <div class="modal fade" id="cvModal" tabindex="-1" aria-labelledby="cvModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cvModalLabel"><i class="fas fa-file-alt me-2"></i>Nouveau CV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cvForm">
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-user"></i> Informations Personnelles</div>
+                            <div class="row">
+                                <div class="col-md-6 input-highlight">
+                                    <div class="floating-label">
+                                        <input type="text" class="form-control" id="nom" placeholder=" " required>
+                                        <label for="nom"><i class="fas fa-user"></i> Nom</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 input-highlight">
+                                    <div class="floating-label">
+                                        <input type="text" class="form-control" id="prenom" placeholder=" " required>
+                                        <label for="prenom"><i class="fas fa-user"></i> Prénom</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 input-highlight">
+                                    <div class="floating-label">
+                                        <input type="email" class="form-control" id="email" placeholder=" " required>
+                                        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 input-highlight">
+                                    <div class="floating-label">
+                                        <input type="tel" class="form-control" id="telephone" placeholder=" " required>
+                                        <label for="telephone"><i class="fas fa-phone"></i> Téléphone</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="input-highlight">
+                                <div class="floating-label">
+                                    <textarea class="form-control" id="adresse" rows="2" placeholder=" " style="height: 80px;"></textarea>
+                                    <label for="adresse"><i class="fas fa-map-marker-alt"></i> Adresse</label>
+                                    <small class="text-muted">Format: Numéro, Rue, Code postal, Ville</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 input-highlight">
+                                    <div class="floating-label">
+                                        <select class="form-control" id="ville" required>
+                                            <option value=""></option>
+                                            <option value="Casablanca">Casablanca</option>
+                                            <option value="Rabat">Rabat</option>
+                                            <option value="Marrakech">Marrakech</option>
+                                            <option value="Fès">Fès</option>
+                                            <option value="Tanger">Tanger</option>
+                                            <option value="Autre">Autre</option>
+                                        </select>
+                                        <label for="ville"><i class="fas fa-city"></i> Ville</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 input-highlight">
+                                    <div class="floating-label">
+                                        <input type="text" class="form-control" id="poste" placeholder=" " required>
+                                        <label for="poste"><i class="fas fa-briefcase"></i> Poste recherché</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="input-highlight">
+                                <div class="date-input-group">
+                                    <div class="floating-label">
+                                        <input type="text" class="form-control" id="dateNaissance" placeholder=" " required>
+                                        <label for="dateNaissance"><i class="fas fa-birthday-cake"></i> Date de naissance</label>
+                                        <button type="button" class="calendar-toggle" id="calendarToggle">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div id="ageDisplay" class="age-display"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-section-title"><i class="fas fa-graduation-cap"></i> Formation & Expérience</div>
+                            <div class="input-highlight">
+                                <div class="floating-label">
+                                    <textarea class="form-control" id="experience" rows="3" placeholder=" " required style="height: 100px;"></textarea>
+                                    <label for="experience"><i class="fas fa-chart-line"></i> Expérience professionnelle</label>
+                                    <small class="text-muted">Décrivez votre parcours professionnel, postes occupés, missions principales</small>
+                                </div>
+                            </div>
+                            
+                            <div class="input-highlight">
+                                <div class="floating-label">
+                                    <textarea class="form-control" id="formation" rows="3" placeholder=" " required style="height: 100px;"></textarea>
+                                    <label for="formation"><i class="fas fa-graduation-cap"></i> Formation et diplômes</label>
+                                    <small class="text-muted">Listez vos diplômes, formations, certifications</small>
+                                </div>
+                            </div>
+                            
+                            <div class="input-highlight">
+                                <div class="floating-label">
+                                    <textarea class="form-control" id="competences" rows="2" placeholder=" " required style="height: 80px;"></textarea>
+                                    <label for="competences"><i class="fas fa-tools"></i> Compétences</label>
+                                    <small class="text-muted">Séparez les compétences par des virgules (ex: HTML, CSS, JavaScript)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message pour l'envoi de la photo -->
+                        <div class="photo-info">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-info-circle mt-1"></i>
+                                <div>
+                                    <h6 class="mb-2">Envoi de votre photo</h6>
+                                    <p class="mb-0">Merci d'envoyer votre photo de profil séparément par WhatsApp après l'envoi de vos informations. Cela nous aidera à compléter votre profil.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-modal" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn whatsapp-btn text-white btn-modal" id="envoyerWhatsApp">
+                        <i class="fab fa-whatsapp me-1"></i> Envoyer par WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal pour afficher le profil complet -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel"><i class="fas fa-user-circle me-2"></i>Profil du Candidat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="profileModalBody">
+                    <!-- Le contenu sera chargé dynamiquement -->
+                </div>
+                <div class="profile-modal-footer">
+                    <div class="contact-buttons-row">
+                        <a href="#" class="btn whatsapp-btn text-white" id="profileWhatsApp">
+                            <i class="fab fa-whatsapp me-1"></i> Contacter par WhatsApp
+                        </a>
+                        <a href="#" class="btn btn-primary" id="profileCall">
+                            <i class="fas fa-phone me-1"></i> Appeler le Condidat
+                        </a>
+                    </div>
+                    <div class="close-button-row">
+                        <button type="button" class="btn" data-bs-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Variable pour stocker les CVs filtrés
+            let filteredCVs = [];
+            
+            // Fonction pour mélanger aléatoirement un tableau (algorithme de Fisher-Yates)
+            function shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+            
+            // Fonction pour afficher les messages d'alerte
+            window.showAlert = function(message, type = 'error', duration = 5000) {
+                const alertContainer = $('#alertContainer');
+                const alertId = 'alert-' + Date.now();
+                
+                let alertClass = '';
+                let icon = '';
+                
+                switch(type) {
+                    case 'success':
+                        alertClass = 'success';
+                        icon = '<i class="fas fa-check-circle"></i>';
+                        break;
+                    case 'warning':
+                        alertClass = 'warning';
+                        icon = '<i class="fas fa-exclamation-triangle"></i>';
+                        break;
+                    case 'filter':
+                        alertClass = 'filter-alert';
+                        icon = '<i class="fas fa-filter"></i>';
+                        break;
+                    default:
+                        alertClass = '';
+                        icon = '<i class="fas fa-exclamation-circle"></i>';
+                }
+                
+                const alertElement = $(`
+                    <div class="alert-message ${alertClass}" id="${alertId}">
+                        <div class="alert-content">
+                            ${icon}
+                            <span>${message}</span>
+                        </div>
+                        <button class="alert-close" onclick="closeAlert('${alertId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `);
+                
+                alertContainer.append(alertElement);
+                
+                // Animation d'entrée
+                setTimeout(() => {
+                    $(`#${alertId}`).css({
+                        'transform': 'translateY(0)',
+                        'opacity': '1'
+                    });
+                }, 10);
+                
+                // Fermeture automatique après la durée spécifiée
+                if (duration > 0) {
+                    setTimeout(() => {
+                        closeAlert(alertId);
+                    }, duration);
+                }
+            };
+            
+            // Fonction pour fermer les messages d'alerte
+            window.closeAlert = function(alertId) {
+                const alertElement = $(`#${alertId}`);
+                alertElement.addClass('alert-hide');
+                
+                setTimeout(() => {
+                    alertElement.remove();
+                }, 500);
+            };
+            
+            // Configuration du calendrier Flatpickr
+            const datePicker = flatpickr("#dateNaissance", {
+                locale: "fr",
+                dateFormat: "d/m/Y",
+                maxDate: "today",
+                onChange: function(selectedDates, dateStr, instance) {
+                    calculateAge(selectedDates[0]);
+                }
+            });
+            
+            // Ouvrir le calendrier en cliquant sur l'icône
+            $("#calendarToggle").click(function() {
+                datePicker.open();
+            });
+            
+            // Fonction pour calculer l'âge
+            function calculateAge(birthDate) {
+                if (!birthDate) return;
+                
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                $("#ageDisplay").text(`Âge: ${age} ans`);
+            }
+            
+            // Afficher le message important après 3 secondes
+            setTimeout(function() {
+                $('#importantMessage').fadeIn(300);
+                $('#messageOverlay').fadeIn(300);
+            }, 3000);
+            
+            // Fermer le message important
+            $('#closeMessage, #closeImportantMessage').click(function() {
+                $('#importantMessage').fadeOut(300);
+                $('#messageOverlay').fadeOut(300);
+            });
+            
+            // Fermer le message en cliquant sur l'overlay
+            $('#messageOverlay').click(function() {
+                $('#importantMessage').fadeOut(300);
+                $('#messageOverlay').fadeOut(300);
+            });
+
+            // Données de démonstration avec photos locales et dates d'ajout
+            const cvs = [
+                {
+                    nom: "Alaoui",
+                    prenom: "Mohamed",
+                    email: "m.alaoui@email.com",
+                    telephone: "0608975435",
+                    adresse: "123 Rue Principale, 20000 Casablanca",
+                    ville: "Casablanca",
+                    poste: "Développeur Web",
+                    experience: "5 ans en développement front-end chez TechSolutions Inc.\nResponsable de l'implémentation d'interfaces utilisateur responsive\nDéveloppement d'applications web avec React et Node.js",
+                    formation: "Master en Informatique - Université Hassan II\nLicence en Génie Logiciel - Université Cadi Ayyad\nCertification AWS Cloud Practitioner",
+                    competences: "HTML, CSS, JavaScript, React, Node.js, MongoDB, Git, AWS",
+                    photo: "images/nopic.jpg",
+                    dateNaissance: "15/05/1990",
+                    dateAjout: "05/09/2025"
+                },
+                {
+                    nom: "Benali",
+                    prenom: "Fatima",
+                    email: "f.benali@email.com",
+                    telephone: "0608975435",
+                    adresse: "456 Avenue Mohammed V, 10000 Rabat",
+                    ville: "Rabat",
+                    poste: "Designer UX/UI",
+                    experience: "3 ans en design d'interfaces chez CreativeStudio\n2 ans en tant que designer freelance\nSpécialisée dans la conception d'interfaces utilisateur intuitives",
+                    formation: "Licence en Design Graphique - École des Beaux-Arts de Casablanca\nCertificat en UX Design - Cours en ligne Google\nFormation en Design Thinking",
+                    competences: "Figma, Adobe XD, Photoshop, Illustrator, Design Thinking, Prototypage, Wireframing",
+                    photo: "images/nopic.jpg",
+                    dateNaissance: "22/08/1993",
+                    dateAjout: "04/09/2025"
+                },
+                {
+                    nom: "Kassi",
+                    prenom: "Hassan",
+                    email: "h.kassi@email.com",
+                    telephone: "0608975435",
+                    adresse: "789 Boulevard Hassan II, 40000 Marrakech",
+                    ville: "Marrakech",
+                    poste: "Chef de Projet IT",
+                    experience: "7 ans en gestion de projets IT chez InnoTech Maroc\n3 ans en développement logiciel\nManagement d'équipes techniques pluridisciplinaires",
+                    formation: "MBA en Management - HEC Paris\nIngénierie Informatique - École Mohammadia d'Ingénieurs\nCertification PMP (Project Management Professional)",
+                    competences: "Gestion de projet, Agile, Scrum, Leadership, Analyse des besoins, Budgeting, Management d'équipe",
+                    photo: "images/nopic.jpg",
+                    dateNaissance: "03/12/1985",
+                    dateAjout: "04/09/2025"
+                }
+            ];
+
+            // Fonction pour afficher les CV sur la page principale
+            function displayCVs(cvsToShow, filterApplied = false) {
+                const cvContainer = $('#cvContainer');
+                cvContainer.empty();
+                
+                // Stocker les CVs filtrés
+                filteredCVs = cvsToShow;
+                
+                if (cvsToShow.length === 0) {
+                    cvContainer.html('<div class="col-12 text-center"><p>Aucun CV ne correspond à votre filtre.</p></div>');
+                    
+                    if (filterApplied) {
+                        const selectedVille = $('#villeFilter').val();
+                        if (selectedVille === "") {
+                            showAlert('Aucun CV dans la base de données', 'warning', 3000);
+                        } else {
+                            showAlert(`Aucun CV trouvé pour la ville de ${selectedVille}`, 'warning', 3000);
+                        }
+                    }
+                    return;
+                }
+                
+                // Mélanger aléatoirement le tableau des CV avant de les afficher
+                const shuffledCVs = shuffleArray([...cvsToShow]);
+                
+                shuffledCVs.forEach((cv, index) => {
+                    // Calculer l'âge à partir de la date de naissance
+                    const naissanceDate = cv.dateNaissance.split('/');
+                    const birthDate = new Date(naissanceDate[2], naissanceDate[1] - 1, naissanceDate[0]);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    
+                    const card = `
+                        <div class="col-md-6 col-lg-4 card-spacing">
+                            <div class="card h-100 cv-card cv-card-main" data-index="${index}">
+                                <div class="card-body text-center">
+                                    <img src="${cv.photo}" alt="${cv.prenom} ${cv.nom}" class="candidate-img" onerror="this.src='https://via.placeholder.com/100x100?text=Photo'">
+                                    <div class="candidate-info">
+                                        <div class="candidate-name">${cv.prenom} ${cv.nom}</div>
+                                        <div class="candidate-position">${cv.poste}</div>
+                                        <div class="candidate-location">
+                                            <i class="fas fa-map-marker-alt"></i> ${cv.ville}
+                                        </div>
+                                        <div class="age-display">${age} ans</div>
+                                    </div>
+                                    <button class="btn btn-primary view-profile-btn" data-index="${index}">
+                                        <i class="fas fa-eye me-1"></i> Afficher le profil
+                                    </button>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="date-ajout">
+                                        <i class="fas fa-calendar-alt"></i> Ajouté le : ${cv.dateAjout}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    cvContainer.append(card);
+                });
+                
+                // Mettre à jour le tableau filteredCVs avec l'ordre mélangé
+                // pour que les indices correspondent aux cartes affichées
+                filteredCVs = shuffledCVs;
+                
+                // Ajouter les événements de clic sur les cartes et boutons
+                $('.cv-card').click(function() {
+                    const index = $(this).data('index');
+                    openProfileModal(index);
+                });
+                
+                $('.view-profile-btn').click(function(e) {
+                    e.stopPropagation(); // Empêcher le déclenchement de l'événement sur la carte parente
+                    const index = $(this).data('index');
+                    openProfileModal(index);
+                });
+                
+                if (filterApplied) {
+                    const selectedVille = $('#villeFilter').val();
+                    if (selectedVille === "") {
+                        showAlert(`${shuffledCVs.length} CV(s) affiché(s) dans un ordre aléatoire`, 'filter', 3000);
+                    } else {
+                        showAlert(`${shuffledCVs.length} CV(s) trouvé(s) pour la ville de ${selectedVille}`, 'filter', 3000);
+                    }
+                }
+            }
+
+            // Fonction pour ouvrir la modale de profil
+            function openProfileModal(index) {
+                // Utiliser l'index du tableau filtré
+                const cv = filteredCVs[index];
+                
+                if (!cv) {
+                    showAlert('Profil non trouvé', 'error', 3000);
+                    return;
+                }
+                
+                // Calculer l'âge
+                const naissanceDate = cv.dateNaissance.split('/');
+                const birthDate = new Date(naissanceDate[2], naissanceDate[1] - 1, naissanceDate[0]);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                // Formater les compétences en badges
+                const competencesArray = cv.competences.split(',').map(item => item.trim());
+                const competencesHTML = competencesArray.map(competence => 
+                    `<span class="competence-badge">${competence}</span>`
+                ).join('');
+                
+                // Formater les formations en liste
+                const formationsArray = cv.formation.split('\n');
+                const formationsHTML = formationsArray.map(formation => 
+                    `<div class="formation-item">${formation}</div>`
+                ).join('');
+                
+                // Formater l'expérience en liste
+                const experienceArray = cv.experience.split('\n');
+                const experienceHTML = experienceArray.map(exp => 
+                    `<div class="formation-item">${exp}</div>`
+                ).join('');
+                
+                // Construire le contenu de la modale
+                const modalContent = `
+                    <div class="text-center">
+                        <img src="${cv.photo}" alt="${cv.prenom} ${cv.nom}" class="profile-modal-img" onerror="this.src='https://via.placeholder.com/120x120?text=Photo'">
+                        <h3>${cv.prenom} ${cv.nom}</h3>
+                        <p class="lead">${cv.poste}</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i>${cv.ville} | <i class="fas fa-birthday-cake me-2"></i>${age} ans</p>
+                    </div>
+                    
+                    <div class="profile-contact-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><i class="fas fa-envelope me-2"></i><strong>Email:</strong> ${cv.email}</p>
+                                <p><i class="fas fa-phone me-2"></i><strong>Téléphone:</strong> ${cv.telephone}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><i class="fas fa-map-marker-alt me-2"></i><strong>Adresse:</strong> ${cv.adresse}</p>
+                                <p><i class="fas fa-birthday-cake me-2"></i><strong>Date de naissance:</strong> ${cv.dateNaissance}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <div class="profile-section-title"><i class="fas fa-chart-line me-2"></i>Expérience Professionnelle</div>
+                        ${experienceHTML}
+                    </div>
+                    
+                    <div class="profile-section">
+                        <div class="profile-section-title"><i class="fas fa-graduation-cap me-2"></i>Formation et Diplômes</div>
+                        ${formationsHTML}
+                    </div>
+                    
+                    <div class="profile-section">
+                        <div class="profile-section-title"><i class="fas fa-tools me-2"></i>Compétences</div>
+                        <div>${competencesHTML}</div>
+                    </div>
+                `;
+                
+                // Mettre à jour le contenu de la modale
+                $('#profileModalBody').html(modalContent);
+                
+                // Mettre à jour les liens de contact
+                $('#profileWhatsApp').attr('href', `https://wa.me/212${cv.telephone.replace(/\D/g, '')}`);
+                $('#profileCall').attr('href', `tel:${cv.telephone}`);
+                
+                // Afficher la modale
+                $('#profileModal').modal('show');
+            }
+
+            // Afficher les CV initiaux dans un ordre aléatoire
+            displayCVs(shuffleArray([...cvs]));
+
+            // Filtrer les CV par ville
+            $('#villeFilter').change(function() {
+                const selectedVille = $(this).val();
+                if (selectedVille === "") {
+                    // Afficher tous les CV dans un ordre aléatoire
+                    displayCVs(shuffleArray([...cvs]), true);
+                } else {
+                    const filteredCVs = cvs.filter(cv => cv.ville === selectedVille);
+                    // Afficher les CV filtrés dans un ordre aléatoire
+                    displayCVs(shuffleArray([...filteredCVs]), true);
+                }
+            });
+
+            // Envoyer le formulaire par WhatsApp
+            $('#envoyerWhatsApp').click(function() {
+                // Validation simple
+                let isValid = true;
+                $('#cvForm input, #cvForm select, #cvForm textarea').each(function() {
+                    if ($(this).prop('required') && !$(this).val()) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+                
+                if (!isValid) {
+                    showAlert('Veuillez remplir tous les champs obligatoires.', 'error', 5000);
+                    return;
+                }
+                
+                // Construction du message
+                const message = `Nouveau CV déposé:%0A%0A` +
+                                `*Nom:* ${$('#nom').val()}%0A` +
+                                `*Prénom:* ${$('#prenom').val()}%0A` +
+                                `*Email:* ${$('#email').val()}%0A` +
+                                `*Téléphone:* ${$('#telephone').val()}%0A` +
+                                `*Adresse:* ${$('#adresse').val()}%0A` +
+                                `*Ville:* ${$('#ville').val()}%0A` +
+                                `*Date de naissance:* ${$('#dateNaissance').val()}%0A` +
+                                `*Poste recherché:* ${$('#poste').val()}%0A` +
+                                `*Expérience:* ${$('#experience').val()}%0A` +
+                                `*Formation:* ${$('#formation').val()}%0A` +
+                                `*Compétences:* ${$('#competences').val()}%0A%0A` +
+                                `*Merci d'envoyer votre photo de profil séparément*`;
+                
+                // Numéro WhatsApp
+                const phoneNumber = '212608975435';
+                
+                // Ouvrir WhatsApp
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+                
+                // Fermer la modale
+                $('#cvModal').modal('hide');
+                
+                // Afficher un message de succès
+                showAlert('Votre CV a été envoyé avec succès! Merci d\'envoyer votre photo séparément.', 'success', 5000);
+                
+                // Réinitialiser le formulaire
+                $('#cvForm')[0].reset();
+                $('#ageDisplay').text('');
+            });
+
+            // Fonction pour ajouter manuellement un nouveau CV
+            window.ajouterCV = function(nouveauCV) {
+                // Vérifier que l'objet a les propriétés requises
+                const proprietesRequises = ['nom', 'prenom', 'email', 'telephone', 'ville', 'poste', 'experience', 'formation', 'competences', 'photo', 'dateNaissance', 'dateAjout'];
+                for (let prop of proprietesRequises) {
+                    if (!nouveauCV.hasOwnProperty(prop)) {
+                        console.error(`La propriété ${prop} est manquante dans le nouvel objet CV`);
+                        showAlert(`La propriété ${prop} est manquante dans le nouvel objet CV`, 'error', 5000);
+                        return false;
+                    }
+                }
+                
+                // Ajouter le nouveau CV au tableau
+                cvs.push(nouveauCV);
+                
+                // Réafficher les CV dans un ordre aléatoire
+                displayCVs(shuffleArray([...cvs]));
+                
+                // Afficher un message de succès
+                showAlert('Nouveau CV ajouté avec succès!', 'success', 3000);
+                
+                return true;
+            };
+            
+            // Correction pour les champs de formulaire - assurer que le texte est visible
+            $('.floating-label .form-control').on('input', function() {
+                // Cette fonction s'assure que le texte est toujours visible
+                $(this).css('color', '#212529');
+            });
+            
+            // ========== FONCTIONNALITÉS DE PARTAGE ==========
+            
+            // Message de partage
+            const shareMessage = `🎉 *NOUVELLE PLATEFORME DE RECRUTEMENT* 🎉
+
+👋 Bonjour à tous !
+
+Je suis heureux de vous présenter *"Le CV"*, ma nouvelle plateforme de mise en relation entre employeurs et chercheurs d'emploi.
+
+📌 *Ce que vous pouvez faire :*
+• Déposer votre CV gratuitement
+• Trouver des talents pour votre entreprise
+• Filtrer les CV par ville
+• Contacter directement les candidats
+
+🚀 *Lien du site :*
+https://mon-site-le-cv.com
+
+👉 Partagez avec vos contacts qui cherchent du travail ou qui recrutent !
+
+Merci pour votre soutien ! 🙏`;
+
+            // Partager sur WhatsApp
+            $('#shareWhatsApp').click(function() {
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+                window.open(whatsappUrl, '_blank');
+                $('#shareModal').modal('hide');
+                showAlert('Partage sur WhatsApp ouvert!', 'success', 3000);
+            });
+            
+            // Partager sur Facebook
+            $('#shareFacebook').click(function() {
+                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://mon-site-le-cv.com')}&quote=${encodeURIComponent('Découvrez "Le CV" - Nouvelle plateforme de recrutement !')}`;
+                window.open(facebookUrl, '_blank', 'width=600,height=400');
+                $('#shareModal').modal('hide');
+                showAlert('Partage sur Facebook ouvert!', 'success', 3000);
+            });
+            
+            // Copier le lien
+            $('#copyLink').click(function() {
+                const link = 'https://mon-site-le-cv.com';
+                navigator.clipboard.writeText(link).then(function() {
+                    showAlert('Lien copié dans le presse-papier!', 'success', 3000);
+                    $('#shareModal').modal('hide');
+                }).catch(function(err) {
+                    showAlert('Erreur lors de la copie du lien', 'error', 3000);
+                });
+            });
+            
+            // Ouvrir automatiquement la modale de partage au chargement de la page (optionnel)
+            // setTimeout(function() {
+            //     $('#shareModal').modal('show');
+            // }, 5000);
+        });
+    </script>
+</body>
+</html>
